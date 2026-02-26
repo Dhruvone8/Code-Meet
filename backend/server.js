@@ -15,7 +15,7 @@ app.use(cors({
 }));
 
 // Routes
-app.use('/inngest', serve({client: inngest, functions: []}))
+app.use('/inngest', serve({client: inngest, inngestFunctions}))
 
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Hello World" });
