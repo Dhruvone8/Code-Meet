@@ -7,8 +7,8 @@ export const connectDB = async () => {
     try {
         const conn = await mongoose.connect(`${process.env.MONGO_URI}/CodeMeet`);
 
-        console.log(`🗄️ MongoDB Connected Successfully ✅`);
-        console.log(`🌐 Host: ${conn.connection.host} 🚀`);
+        console.log(`MongoDB Connected Successfully ✅`);
+        console.log(`Host: ${conn.connection.host} 🚀`);
     } 
     catch (error) {
         console.error(`❌ Database Connection Failed 💥`);

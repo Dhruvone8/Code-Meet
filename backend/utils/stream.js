@@ -1,4 +1,5 @@
 import { StreamChat } from "stream-chat"
+import { StreamClient } from "@stream-io/node-sdk"
 import dotenv from "dotenv"
 dotenv.config({ quiet: true })
 
@@ -9,6 +10,10 @@ if (!apiKey || !apiSecret) {
     throw new Error('STREAM_API_KEY Or STREAM_API_SECRET is missing')
 }
 
+// Video Call Features
+export const streamClient = new StreamClient(apiKey, apiSecret);
+
+// Chat Features
 export const chatClient = StreamChat.getInstance(apiKey, apiSecret);
 
 export const upsertStreamUser = async (userData) => {
