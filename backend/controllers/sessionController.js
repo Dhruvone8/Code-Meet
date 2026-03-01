@@ -17,30 +17,34 @@ export async function createSession(req, res) {
         // Generate a unique call Id for stream video
         const callId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 10)}`;
 
-        // Create Session in database
-        const session = await Session.create({
-            problem,
-            difficulty,
-            host: userId,
-            callId
-        })
+        const call = StreamClient.video.call("default", callId)
 
         // Create Stream Video Call
-        await StreamClient.video.call("default", callId).getOrCreate({
+        await call.getOrCreate({
             data: {
                 created_by_id: clerkId,
                 custom: { problem, difficulty, sessionId: session._id.toString() }
             }
         });
 
-        // Chat Messaging
-        const channel = chatClient.channel("messaging", callId, {
-            name: `${problem} - ${difficulty}`,
-            created_by_id: clerkId,
-            members: [clerkId]
-        })
+        let session;
+        try {
+            const channel = chatClient.channel("messaging", callId, {
+                name: `${problem} - ${difficulty}`,
+                created_by_id: clerkId,
+                members: [clerkId]
+            });
 
-        await channel.create()
+            await channel.create()
+
+            // Only create session in the Database if stream resources succeed
+            session = await Session.create({ problem, difficulty, host: userId, callId });
+        } catch (channelError) {
+
+            // Rollback: Delete the video call if channel creation fails
+            await call.delete({ hard: true }).catch(console.error);
+            throw channelError;
+        }
 
         res.status(201).json({ session })
 
@@ -49,7 +53,6 @@ export async function createSession(req, res) {
         res.status(500).json({ error: 'Internal Server Error' })
     }
 }
-
 
 export async function getActiveSessions(req, res) {
     try {
@@ -107,6 +110,16 @@ export async function joinSession(req, res) {
 
         // Check if session exists
         if (!session) return res.status(404).json({ error: 'Session not found' })
+
+        // Check if session is active
+        if (session.status !== active) {
+            return res.status(400).json({ message: "This Session has been Ended" })
+        }
+
+        // Validation: Host cannot join their own session as participant
+        if (session.host.toString() === userId.toString()) {
+            return res.status(400).json({ message: "Host cannot join their own session as participant" })
+        }
 
         // Check if session is full
         if (session.participant) return res.status(400).json({ error: 'Session is full' })
