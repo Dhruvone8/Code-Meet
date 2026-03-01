@@ -1,10 +1,22 @@
 import React from 'react'
+import { Routes, Route, Navigate } from 'react-router'
+import HomePage from './pages/HomePage'
+import ProblemsPage from './pages/ProblemsPage'
+import { useUser } from '@clerk/clerk-react'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
+
+  const { isSignedIn } = useUser();
+
   return (
-    <div>
-      
-    </div>
+    <>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/problems" element={isSignedIn ? <ProblemsPage /> : <Navigate to="/" />} />
+      </Routes>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+    </>
   )
 }
 
