@@ -280,6 +280,136 @@ int main() {
   },
 };
 
+  "house-robber": {
+    id: "house-robber",
+    title: "House Robber",
+    difficulty: "Medium",
+    category: "Array • Dynamic Programming",
+    description: {
+      text: "You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. The only constraint is that adjacent houses cannot be robbed on the same night.",
+      notes: [
+        "Return the maximum amount of money you can rob without alerting the police."
+      ],
+    },
+    examples: [
+      {
+        input: "nums = [1,2,3,1]",
+        output: "4",
+        explanation: "Rob house 1 (1) and house 3 (3). Total = 4."
+      },
+      {
+        input: "nums = [2,7,9,3,1]",
+        output: "12",
+        explanation: "Rob house 1 (2), house 3 (9), house 5 (1). Total = 12."
+      }
+    ],
+    constraints: [
+      "1 ≤ nums.length ≤ 100",
+      "0 ≤ nums[i] ≤ 400"
+    ],
+    starterCode: {
+      cpp: `#include <bits/stdc++.h>
+using namespace std;
+
+int rob(vector<int>& nums) {
+  // Write your solution here
+  
+}
+
+int main() {
+  vector<int> a = {1,2,3,1};
+  cout << rob(a) << endl;
+
+  vector<int> b = {2,7,9,3,1};
+  cout << rob(b) << endl;
+}`,
+      python: `def rob(nums):
+    # Write your solution here
+    pass
+
+print(rob([1,2,3,1]))  # Expected: 4
+print(rob([2,7,9,3,1]))  # Expected: 12`,
+      java: `class Solution {
+    public static int rob(int[] nums) {
+        // Write your solution here
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(rob(new int[]{1,2,3,1}));
+        System.out.println(rob(new int[]{2,7,9,3,1}));
+    }
+}`,
+    },
+    expectedOutput: {
+      cpp: "4\n12",
+      python: "4\n12",
+      java: "4\n12",
+    },
+  },
+
+    "making-a-large-island": {
+    id: "making-a-large-island",
+    title: "Making A Large Island",
+    difficulty: "Hard",
+    category: "Graph • DFS • Matrix",
+    description: {
+      text: "You are given an n x n binary matrix grid. You are allowed to change at most one 0 to 1. Return the size of the largest island after applying this operation.",
+      notes: [
+        "An island is a 4-directionally connected group of 1s."
+      ],
+    },
+    examples: [
+      {
+        input: "grid = [[1,0],[0,1]]",
+        output: "3"
+      },
+      {
+        input: "grid = [[1,1],[1,0]]",
+        output: "4"
+      },
+      {
+        input: "grid = [[1,1],[1,1]]",
+        output: "4"
+      }
+    ],
+    constraints: [
+      "1 ≤ n ≤ 500",
+      "grid[i][j] is either 0 or 1"
+    ],
+    starterCode: {
+      cpp: `#include <bits/stdc++.h>
+using namespace std;
+
+int largestIsland(vector<vector<int>>& grid) {
+  // Write your solution here
+  
+}
+
+int main() {
+  vector<vector<int>> g1 = {{1,0},{0,1}};
+  cout << largestIsland(g1) << endl;
+
+  vector<vector<int>> g2 = {{1,1},{1,0}};
+  cout << largestIsland(g2) << endl;
+}`,
+      python: `def largestIsland(grid):
+    # Write your solution here
+    pass`,
+      java: `class Solution {
+    public static int largestIsland(int[][] grid) {
+        // Write your solution here
+        return 0;
+    }
+}`,
+    },
+    expectedOutput: {
+      cpp: "3\n4",
+      python: "3\n4",
+      java: "3\n4",
+    },
+  },
+
 export const LANGUAGE_CONFIG = {
   cpp: {
     name: "C++",
