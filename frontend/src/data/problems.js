@@ -278,7 +278,6 @@ int main() {
       java: "49",
     },
   },
-};
 
   "house-robber": {
     id: "house-robber",
@@ -409,6 +408,8 @@ int main() {
       java: "3\n4",
     },
   },
+
+};
 
 export const LANGUAGE_CONFIG = {
   cpp: {

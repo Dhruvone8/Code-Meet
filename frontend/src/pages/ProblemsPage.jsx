@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar.jsx'
 import { PROBLEMS } from '../data/problems.js'
 import { Link } from "react-router"
 import { CodeXml, ChevronRight } from 'lucide-react';
-import { getDifficultyBadgeClass } from "../utils/badge.js"
+import { getDifficultyBadgeClass, getDifficultyGlow } from "../utils/badge.js"
 
 const ProblemsPage = () => {
 
@@ -28,8 +28,11 @@ const ProblemsPage = () => {
         {/* PROBLEMS LIST */}
         <div className="space-y-4">
           {problems.map((prob) => (
-            <Link key={prob.id} to={`/problem/${prob.id}`}
-              className="card bg-base-100 hover:scale-[1.02] transition-all duration-300">
+            <Link
+              key={prob.id}
+              to={`/problem/${prob.id}`}
+              className={`card bg-base-100 border border-base-300 hover:scale-[1.02] transition-all duration-300 ${getDifficultyGlow(prob.difficulty)}`}
+            >
               <div className="card-body">
                 <div className="flex items-center justify-between gap-4">
                   {/* LEFT SIDE */}
@@ -51,7 +54,7 @@ const ProblemsPage = () => {
                     <p className="text-base-content/80 mb-3">{prob.description.text}</p>
                   </div>
                   {/* Right Side */}
-                  <div className="flex items-center gap-2 text-primary">
+                  <div className="flex items-center gap-2 text-primary hover:scale-105 transition-smooth duration-400">
                     <span className="font-medium">Solve</span>
                     <ChevronRight className="size-5" />
                   </div>
