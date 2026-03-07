@@ -32,8 +32,8 @@ const ProblemPage = () => {
 
     }
 
-    const handleProblemChange = () => {
-
+    const handleProblemChange = (newProblemId) => {
+        navigate(`/problem/${newProblemId}`)
     }
 
     const triggerConfetti = () => {
@@ -49,7 +49,7 @@ const ProblemPage = () => {
     }
 
     return (
-        <div className="h-screen w-screen bg-base-100 flex flex-col">
+        <div className="h-screen bg-base-100 flex flex-col">
             <Navbar />
 
             <div className="flex-1 overflow-hidden">

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from "react-router"
 import { Squirrel, ArrowRight, Zap, Check, Video, CodeXml, UsersRound } from 'lucide-react';
-import { SignInButton } from "@clerk/clerk-react"
+import { SignInButton } from "@clerk/react"
 
 const HomePage = () => {
   return (

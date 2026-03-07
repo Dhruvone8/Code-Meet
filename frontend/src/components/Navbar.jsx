@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router'
 import { Squirrel, BookMarked, LayoutDashboard } from 'lucide-react'
-import { UserButton } from '@clerk/clerk-react'
+import { UserButton } from '@clerk/react'
 
 const Navbar = () => {
 
