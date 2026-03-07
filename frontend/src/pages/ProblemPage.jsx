@@ -6,6 +6,8 @@ import ProblemDescription from '../components/ProblemDescription'
 import Navbar from '../components/Navbar'
 import CodeEditorPanel from '../components/CodeEditorPanel'
 import OutputPanel from '../components/OutputPanel'
+import { executeCode } from "../utils/piston"
+import toast from 'react-hot-toast'
 
 const ProblemPage = () => {
     const { id } = useParams()
@@ -29,23 +31,61 @@ const ProblemPage = () => {
     }, [id, selectedLanguage])
 
     const handleLanguageChange = (e) => {
-
-    }
+        const newLang = e.target.value
+        setSelectedLanguage(newLang)
+        setCode(currentProblem.starterCode[newLang])
+        setOutput(null)
+    };
 
     const handleProblemChange = (newProblemId) => {
         navigate(`/problem/${newProblemId}`)
     }
 
-    const triggerConfetti = () => {
+    const normalizeOutput = (output) => {
+        // normalize output for comparison (trim whitespace, handle different spacing)
+        return output
+            .trim()
+            .split("\n")
+            .map((line) =>
+                line
+                    .trim()
+                    // remove spaces after [ and before ]
+                    .replace(/\[\s+/g, "[")
+                    .replace(/\s+\]/g, "]")
+                    // normalize spaces around commas to single space after comma
+                    .replace(/\s*,\s*/g, ", ")
+            )
+            .filter((line) => line.length > 0)
+            .join("\n");
+    };
 
+    const checkIfTestsPassed = (actualOutput, expectedOutput) => {
+        const normalizeActual = normalizeOutput(actualOutput)
+        const normalizeExpected = normalizeOutput(expectedOutput)
+        return normalizeActual === normalizeExpected;
     }
 
-    const checkIfTestsPassed = () => {
+    const handleRunCode = async () => {
+        setIsRunning(true)
+        setOutput(null)
+        const result = await executeCode(selectedLanguage, code)
+        setOutput(result)
+        setIsRunning(false)
 
-    }
+        // Check if code executed successfully and matches the expected output
+        if (result.success) {
+            const expectedOutput = currentProblem.expectedOutput[selectedLanguage];
+            const testPassed = checkIfTestsPassed(result.output, expectedOutput)
 
-    const handleRunCode = () => {
-
+            if (testPassed) {
+                toast.success("All Test Cases Passed! Great Job")
+            }
+            else {
+                toast.error("Test Failed! Check Your Code")
+            }
+        } else {
+            toast.error("Code Execution Failed!")
+        }
     }
 
     return (
@@ -69,13 +109,20 @@ const ProblemPage = () => {
                         <Group orientation="vertical">
 
                             <Panel defaultSize={70} minSize={30}>
-                                <CodeEditorPanel />
+                                <CodeEditorPanel
+                                    selectedLanguage={selectedLanguage}
+                                    code={code}
+                                    isRunning={isRunning}
+                                    onLanguageChange={handleLanguageChange}
+                                    onCodeChange={setCode}
+                                    onRunCode={handleRunCode}
+                                />
                             </Panel>
 
                             <Separator className="h-1 bg-black hover:bg-emerald-400 cursor-row-resize" />
 
                             <Panel defaultSize={30} minSize={20}>
-                                <OutputPanel />
+                                <OutputPanel output={output} />
                             </Panel>
 
                         </Group>
