@@ -23,7 +23,7 @@ app.use(clerkMiddleware());
 app.get("/", (req, res) => {
     res.status(200).json({ message: "Sever is Up and Running" });
 });
-app.use('/inngest', serve({ client: inngest, inngestFunctions }))
+app.use('/inngest', serve({ client: inngest, functions: inngestFunctions }))
 app.use("/chat", chatRoute)
 app.use('/sessions', sessionRoute)
 
