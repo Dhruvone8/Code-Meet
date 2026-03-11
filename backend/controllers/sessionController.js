@@ -1,6 +1,5 @@
 import Session from "../models/Session.js";
-import { StreamClient } from "@stream-io/node-sdk"
-import { chatClient } from "../utils/stream.js";
+import { chatClient, streamClient } from "../utils/stream.js";
 
 export async function createSession(req, res) {
     try {
@@ -17,7 +16,9 @@ export async function createSession(req, res) {
         // Generate a unique call Id for stream video
         const callId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 10)}`;
 
-        const call = StreamClient.video.call("default", callId)
+        const session = await Session.create({ problem, difficulty, host: userId, callId })
+
+        const call = streamClient.video.call("default", callId)
 
         // Create Stream Video Call
         await call.getOrCreate({
@@ -27,7 +28,6 @@ export async function createSession(req, res) {
             }
         });
 
-        let session;
         try {
             const channel = chatClient.channel("messaging", callId, {
                 name: `${problem} - ${difficulty}`,
@@ -36,11 +36,8 @@ export async function createSession(req, res) {
             });
 
             await channel.create()
-
-            // Only create session in the Database if stream resources succeed
-            session = await Session.create({ problem, difficulty, host: userId, callId });
         } catch (channelError) {
-
+            await session.deleteOne(); // Rollback DB
             // Rollback: Delete the video call if channel creation fails
             await call.delete({ hard: true }).catch(console.error);
             throw channelError;
@@ -73,7 +70,7 @@ export async function getMyRecentSessions(req, res) {
         const userId = req.user._id;
 
         // Get Session whether user is either host or participant
-        const sessions = await Session.find({ status: "completed", $or: [{ host: userId }, { participants: userId }] }).
+        const sessions = await Session.find({ status: "completed", $or: [{ host: userId }, { participant: userId }] }).
             sort({ createdAt: -1 }).limit(15)
 
         res.status(200).json({ sessions })
@@ -89,7 +86,7 @@ export async function getSessionById(req, res) {
 
         const session = await Session.findById(id)
             .populate("host", "name email profilePic clerkId")
-            .populate("participants", "name email profilePic clerkId")
+            .populate("participant", "name email profilePic clerkId")
 
         if (!session) return res.status(404).json({ error: 'Session not found' })
 
@@ -112,7 +109,7 @@ export async function joinSession(req, res) {
         if (!session) return res.status(404).json({ error: 'Session not found' })
 
         // Check if session is active
-        if (session.status !== active) {
+        if (session.status !== "active") {
             return res.status(400).json({ message: "This Session has been Ended" })
         }
 
@@ -159,7 +156,7 @@ export async function endSession(req, res) {
         }
 
         // Delete Stream Video Call
-        const call = StreamClient.call("default", session.callId);
+        const call = streamClient.call("default", session.callId);
         await call.delete({ hard: true });
 
         // Delete Stream Chat
