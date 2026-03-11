@@ -9,7 +9,7 @@ const syncUser = inngest.createFunction(
     { id: "sync-user" },
     { event: "clerk/user.created" },
     async ({ event, step }) => {
-        await connectDB()
+        await step.run("connect-db", () => connectDB());
 
         const { id, email_addresses, first_name, last_name, image_url } = event.data;
 
@@ -18,15 +18,17 @@ const syncUser = inngest.createFunction(
             email: email_addresses[0]?.email_address,
             name: `${first_name || ""} ${last_name || ""}`.trim(),
             profilePic: image_url
-        }
+        };
 
-        await User.create(newUser)
+        await step.run("create-user-in-db", () => User.create(newUser));
 
-        await upsertStreamUser({
-            id: newUser.clerkId.toString(),
-            name: newUser.name,
-            image: newUser.profilePic
-        })
+        await step.run("upsert-stream-user", () =>
+            upsertStreamUser({
+                id: newUser.clerkId.toString(),
+                name: newUser.name,
+                image: newUser.profilePic
+            })
+        );
     }
 )
 
@@ -34,13 +36,13 @@ const deleteUserFromDB = inngest.createFunction(
     { id: "delete-user-from-db" },
     { event: "clerk/user.deleted" },
     async ({ event, step }) => {
-        await connectDB()
+        await step.run("connect-db", () => connectDB());
 
         const { id } = event.data;
 
-        await User.deleteOne({ clerkId: id })
-        
-        await deleteStreamUser(id.toString())
+        await step.run("delete-user-from-db", () => User.deleteOne({ clerkId: id }));
+
+        await step.run("delete-stream-user", () => deleteStreamUser(id.toString()));
     }
 )
 
