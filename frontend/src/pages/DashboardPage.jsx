@@ -32,7 +32,8 @@ const DashboardPage = () => {
       difficulty: roomConfig.difficulty
     }, {
       onSuccess: (data) => {
-        setShowCreateModal(false);
+        console.log("SESSION RESPONSE:", data)
+        setShowCreateModal(false)
         navigate(`/session/${data.session._id}`)
       }
     });
