@@ -8,9 +8,10 @@ import StatsCard from '../components/StatsCard'
 import ActiveSessions from '../components/ActiveSessions'
 import RecentSessions from '../components/RecentSessions'
 import CreateSessionModal from '../components/CreateSessionModal'
+import useAxios from '../hooks/useAxios'
 
 const DashboardPage = () => {
-
+  useAxios();
   const navigate = useNavigate()
   const { user } = useUser()
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -29,10 +30,10 @@ const DashboardPage = () => {
     }
     createSessionMutation.mutate({
       problem: roomConfig.problem,
-      difficulty: roomConfig.difficulty
+      difficulty: roomConfig.difficulty.toLowerCase(),
     }, {
       onSuccess: (data) => {
-        console.log("SESSION RESPONSE:", data)
+        console.log("SESSION RESPONSE:", data.session)
         setShowCreateModal(false)
         navigate(`/session/${data.session._id}`)
       }
