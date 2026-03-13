@@ -8,10 +8,8 @@ import StatsCard from '../components/StatsCard'
 import ActiveSessions from '../components/ActiveSessions'
 import RecentSessions from '../components/RecentSessions'
 import CreateSessionModal from '../components/CreateSessionModal'
-import useAxios from '../hooks/useAxios'
 
 const DashboardPage = () => {
-  useAxios();
   const navigate = useNavigate()
   const { user } = useUser()
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -52,7 +50,11 @@ const DashboardPage = () => {
         {/* GRID LAYOUT */}
         <div className="container mx-auto px-6 pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <StatsCard />
+            <StatsCard
+              activeSessionsCount={activeSessions.length}
+              recentSessionsCount={myRecentSessions.length}
+              isLoading={activeSessionsLoading || myRecentSessionsLoading}
+            />
             <ActiveSessions />
           </div>
           <RecentSessions />
