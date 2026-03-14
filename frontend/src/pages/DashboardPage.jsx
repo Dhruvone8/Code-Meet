@@ -41,6 +41,12 @@ const DashboardPage = () => {
   const activeSessions = activeSessionsData?.sessions || []
   const myRecentSessions = myRecentSessionsData?.sessions || []
 
+  const isUserInSession = (session) => {
+    if (!user.id) return false;
+
+    return session.host?.clerkId === user.id || session.participant?.clerkId === user.id
+  }
+
   return (
     <>
       <div className="min-h-screen bg-base-300">
@@ -55,9 +61,15 @@ const DashboardPage = () => {
               recentSessionsCount={myRecentSessions.length}
               isLoading={activeSessionsLoading || myRecentSessionsLoading}
             />
-            <ActiveSessions />
+            <ActiveSessions
+              sessions={activeSessions}
+              isLoading={activeSessionsLoading}
+              isUserInSession={isUserInSession}
+            />
           </div>
-          <RecentSessions />
+          <RecentSessions
+            sessions={myRecentSessions}
+            isLoading={myRecentSessionsLoading} />
         </div>
       </div>
       <CreateSessionModal
