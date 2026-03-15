@@ -1,4 +1,5 @@
 export const getDifficultyBadgeClass = (difficulty) => {
+  if (!difficulty) return "badge-ghost";
   switch (difficulty.toLowerCase()) {
     case "easy":
       return "badge-success";
@@ -12,6 +13,7 @@ export const getDifficultyBadgeClass = (difficulty) => {
 };
 
 export const getDifficultyGlow = (difficulty) => {
+  if (!difficulty) return "";
   switch (difficulty) {
     case "Easy":
       return "hover:border-green-400 hover:shadow-[0_0_5px_#22c55e,0_0_10px_#22c55e]";
