@@ -44,7 +44,7 @@ function RecentSessions({ sessions, isLoading }) {
                           : "bg-gradient-to-br from-primary to-secondary"
                         }`}
                     >
-                      <Code2 className="w-6 h-6 text-white" />
+                      <Code className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-base mb-1 truncate">{session.problem}</h3>

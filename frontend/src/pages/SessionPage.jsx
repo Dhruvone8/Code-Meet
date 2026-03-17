@@ -7,9 +7,13 @@ import { executeCode } from "../utils/piston"
 import { Panel, Group, Separator } from "react-resizable-panels"
 import Navbar from "../components/Navbar"
 import { getDifficultyBadgeClass } from "../utils/badge"
-import { Loader, LogOut } from "lucide-react"
+import { Loader, LogOut, PhoneOff } from "lucide-react"
 import CodeEditorPanel from "../components/CodeEditorPanel"
 import OutputPanel from "../components/OutputPanel"
+import useStreamClient from "../hooks/useStreamClient"
+import { StreamVideo, StreamCall } from "@stream-io/video-react-sdk"
+import VideoCallUI from "../components/VideoCallUI"
+import toast from "react-hot-toast"
 
 const SessionPage = () => {
 
@@ -27,6 +31,8 @@ const SessionPage = () => {
   const session = sessionData?.session;
   const isHost = session?.host?.clerkId === user?.id;
   const isParticipant = session?.participant?.clerkId === user?.id;
+
+  const { call, channel, chatClient, isInitializingCall, streamClient } = useStreamClient(session, loadingSession, isHost, isParticipant)
 
   // Find Problem
   const problemData = session?.problem ? Object.values(PROBLEMS).find(p => p.title === session.problem) : null;
@@ -81,7 +87,12 @@ const SessionPage = () => {
     if (confirm("Are You Sure That You Want To End This Session? All the Participants Will Be Notified")) {
       endSessionMutation.mutate(id, {
         onSuccess: () => {
-          navigate("/dashboard")
+          toast.success("Session ended successfully");
+          navigate("/dashboard");
+        },
+        onError: (error) => {
+          toast.error(error.response?.data?.message || "Failed to end session");
+          console.error("Error ending session:", error);
         }
       });
     }
@@ -243,6 +254,38 @@ const SessionPage = () => {
 
           {/* RIGHT PANEL - VIDEO CALLS & CHAT */}
           <Panel defaultSize={50} minSize={30}>
+            <div className="h-full bg-base-200 p-4 overflow-auto">
+              {isInitializingCall ? (
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center">
+                    <Loader className="w-12 h-12 mx-auto animate-spin text-primary mb-4" />
+                    <p className="text-lg">Initializing video call...</p>
+                  </div>
+                </div>
+              ) : !streamClient || !call ? (
+                <div className="h-full flex items-center justify-center">
+                  <div className="card bg-base-100 shadow-xl max-w-md">
+                    <div className="card-body items-center text-center">
+                      <div className="w-24 h-24 bg-error/10 rounded-full flex items-center justify-center mb-4">
+                        <PhoneOff className="w-12 h-12 text-error" />
+                      </div>
+                      <h2 className="card-title text-2xl">Connection Failed</h2>
+                      <p className="text-base-content/70">Unable to connect to the video call</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-full">
+                  <StreamVideo client={streamClient}>
+                    <StreamCall call={call}>
+                      <VideoCallUI chatClient={chatClient} channel={channel}>
+
+                      </VideoCallUI>
+                    </StreamCall>
+                  </StreamVideo>
+                </div>
+              )}
+            </div>
           </Panel>
         </Group>
       </div>
