@@ -87,11 +87,9 @@ const SessionPage = () => {
     if (confirm("Are You Sure That You Want To End This Session? All the Participants Will Be Notified")) {
       endSessionMutation.mutate(id, {
         onSuccess: () => {
-          toast.success("Session ended successfully");
           navigate("/dashboard");
         },
         onError: (error) => {
-          toast.error(error.response?.data?.message || "Failed to end session");
           console.error("Error ending session:", error);
         }
       });
